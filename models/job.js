@@ -42,16 +42,15 @@ class Job {
                   title,
                   salary,
                   equity,
-                  company_handle AS "companyHandle",
+                  company_handle AS "companyHandle"
            FROM jobs
            ORDER BY title`);
     return jobsRes.rows;
   }
 
-   /** Given a job title, return data about job.
+   /** Given a job id, return data about job.
    *
-   * Returns { title, salary, equity, numEmployees, logoUrl, jobs }
-   *   where jobs is [{ id, title, salary, equity, jobtitle }, ...]
+   * Returns { id, title, salary, equity, companyHandle }
    *
    * Throws NotFoundError if not found.
    **/

@@ -30,7 +30,15 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
     values: Object.values(dataToUpdate),
   };
 }
-
+/**
+ * This function helps build a query string where we are filtering
+ * companies based on the following three criteria:
+ * nameLike: The company name contains the provided string (case-insensitive)
+ * minEmployees: The minimum number of employees that a company can have
+ * maxEmployees: The maximum number of employees that a company can have
+ * @param {*} request 
+ * @returns query string
+ */
 function queryBuilder(request) {
   let queryString = [];
   let numb;
@@ -48,7 +56,41 @@ function queryBuilder(request) {
   return queryString.join(" AND ");
 }
 
+/**
+ * Similar to the companies filtering above,
+ *  This function aids in filtering jobs on the following possible
+ *  criteria:
+ * **title***: filter by job title.  case-insensitive, 
+ *  matches-any-part-of-string .
+ * **minSalary***: filter to jobs with at least that salary.
+ * **hasEquity***: if ***true***, filter to jobs that provide a
+ *  non-zero amount of equity. If ***false*** or not included in 
+ * the filtering, list all jobs regardless of equity.
+   @param {*} request
+ * @returns query string
+ */
+function jobQueryBuilder(request) {
+  let queryString = [];
+  let numb;
+  if(request.titleLike) {
+    queryString.push(`title ILIKE '%${request.titleLike}%'`);
+  }
+  if(request.minSalary) {
+    numb = parseInt(request.minSalary);
+    queryString.push(`salary >= ${numb}`);
+  }
+  if(request.hasEquity) {
+    if(request.hasEquity === "true") {
+      queryString.push(`equity > 0.0`);
+
+    }
+  }
+  return queryString.join(" AND ");
+}
 
 
 
-module.exports = { sqlForPartialUpdate, queryBuilder };
+
+module.exports = { sqlForPartialUpdate,
+                   queryBuilder,
+                   jobQueryBuilder };

@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate, queryBuilder } = require("../helpers/sql");
+const { sqlForPartialUpdate, jobQueryBuilder } = require("../helpers/sql");
 
 /** Related functions for jobs. */
 
@@ -44,7 +44,7 @@ class Job {
                   equity,
                   company_handle AS "companyHandle"
            FROM jobs
-           ORDER BY title`);
+           ORDER BY id`);
     return jobsRes.rows;
   }
 
@@ -73,28 +73,26 @@ class Job {
     return job;
   }
 
-//   static async search(request) {
-//     if(request.minEmployees && request.maxEmployees) {
-//       if(parseInt(request.minEmployees) > parseInt(request.maxEmployees)) {
-//         throw new BadRequestError("minEmployees parameter cannot be greater than maxEmployees parameter.");
-//       }
-//     }
-//     const searchQuery = queryBuilder(request);
-//     const jobRes = await db.query(
-//       `SELECT title,
-//               salary,
-//               equity,
-//               company_handle AS "numEmployees",
-//               logo_url AS "logoUrl"
-//        FROM jobs
-//        WHERE ${searchQuery}`);
+  static async search(request) {
+    if(parseInt(request.minSalary) < 0) {
+        throw new BadRequestError("minSalary parameter cannot be negative.");
+    }
+    const searchQuery = jobQueryBuilder(request);
+    const jobRes = await db.query(
+      `SELECT id,
+              title,
+              salary,
+              equity,
+              company_handle AS "companyHandle"
+       FROM jobs
+       WHERE ${searchQuery}`);
 
-//     const job = jobRes.rows;
+    const job = jobRes.rows;
 
-//     if (!job) throw new NotFoundError(`No job: ${title}`);
+    if (!job) throw new NotFoundError(`No job: ${title}`);
 
-//     return job;
-//   }
+    return job;
+  }
 
 
   /** Update job data with `data`.

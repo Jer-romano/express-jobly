@@ -81,10 +81,26 @@ class Company {
         [handle]);
 
     const company = companyRes.rows[0];
-
     if (!company) throw new NotFoundError(`No company: ${handle}`);
 
-    return company;
+    const jobRes = await db.query(
+        `SELECT id,
+                title,
+                salary,
+                equity
+         FROM jobs
+         WHERE company_handle = $1`,
+         [handle]);
+
+    let jobs;
+    if(jobRes.rows.length == 0) {
+      jobs = ["none"];
+    }
+    else {
+      jobs = jobRes.rows;
+    }
+
+    return {...company, jobs};
   }
 
   static async search(request) {

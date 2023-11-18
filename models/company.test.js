@@ -158,6 +158,31 @@ describe("get", function () {
       description: "Desc1",
       numEmployees: 1,
       logoUrl: "http://c1.img",
+      jobs: ["none"]
+    });
+  });
+
+  test("works: shows company jobs as well", async function () {
+    let company = await Company.get("c2");
+    expect(company).toEqual({
+      handle: "c2",
+      name: "C2",
+      description: "Desc2",
+      numEmployees: 2,
+      logoUrl: "http://c2.img",
+      jobs: [ 
+        {
+        id: 1,
+        title: "Engineer",
+        salary: 200,
+        equity: "0.1"
+        },
+        {
+        id: 2,
+        title: "Secretary",
+        salary: 50,
+        equity: "0.01"
+        }]
     });
   });
 

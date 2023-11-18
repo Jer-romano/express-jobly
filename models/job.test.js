@@ -24,7 +24,7 @@ describe("create", function() {
         company_handle: 'c1'
     }
     const newJobWithID = {
-        id: 3,
+        id: 4,
         title: "Secretary",
         salary: 100,
         equity: "0.1",
@@ -43,7 +43,7 @@ describe("create", function() {
                                 equity,
                                 company_handle AS "companyHandle"
                              FROM jobs
-                             WHERE id = 3`);
+                             WHERE id = 4`);
         expect(result.rows[0]).toEqual(newJobWithID);
     });
 });
@@ -54,18 +54,25 @@ describe("findAll", function() {
         const jobs = await Job.findAll();
         expect(jobs).toEqual([
             {
-                id: 2,
-                title: "CEO",
-                salary: 300,
-                equity: '0.2',
-                companyHandle: 'c3'
-            },
-            {
                 id: 1,
                 title: "Engineer",
                 salary: 200,
                 equity: '0.1',
                 companyHandle: 'c2'
+            },
+            {
+                id: 2,
+                title: "Secretary",
+                salary: 50,
+                equity: '0.01',
+                companyHandle: 'c2'
+            },
+            {
+                id: 3,
+                title: "CEO",
+                salary: 300,
+                equity: '0.2',
+                companyHandle: 'c3'
             }
         ])
     }); 

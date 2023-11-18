@@ -199,6 +199,7 @@ describe("GET /users/:username", function () {
         lastName: "U3L",
         email: "user3@user.com",
         isAdmin: false,
+        jobs: [null]
       },
     });
   });
@@ -214,6 +215,7 @@ describe("GET /users/:username", function () {
         lastName: "U2L",
         email: "user2@user.com",
         isAdmin: false,
+        jobs: [null]
       },
     });
   });
@@ -239,6 +241,82 @@ describe("GET /users/:username", function () {
     expect(resp.statusCode).toEqual(404);
   });
 });
+
+
+/****************************** POST /users/:username/jobs/:id */
+describe("POST /users/:username/jobs/:id (apply)", () => {
+  test("works for admins", async function() {
+    const resp = await request(app)
+    .post(`/users/u2/jobs/1`)
+    .set("authorization", `Bearer ${u1Token}`);
+
+    expect(resp.body).toEqual({
+      applied: 1
+    });
+    //check that user has been updated
+    const resp2 = await request(app)
+    .get(`/users/u2`)
+    .set("authorization", `Bearer ${u1Token}`);
+
+    expect(resp2.body).toEqual({
+      user: {
+        username: "u2",
+        firstName: "U2F",
+        lastName: "U2L",
+        email: "user2@user.com",
+        isAdmin: false,
+        jobs: [1]
+      },
+    });
+  })
+
+  test("works for (own) user", async function () {
+    const resp = await request(app)
+    .post(`/users/u2/jobs/2`)
+    .set("authorization", `Bearer ${u2Token}`);
+
+    expect(resp.body).toEqual({
+      applied: 2
+    });
+    //check that user has been updated
+    const resp2 = await request(app)
+    .get(`/users/u2`)
+    .set("authorization", `Bearer ${u1Token}`);
+
+    expect(resp2.body).toEqual({
+      user: {
+        username: "u2",
+        firstName: "U2F",
+        lastName: "U2L",
+        email: "user2@user.com",
+        isAdmin: false,
+        jobs: [2]
+      },
+    });
+  });
+
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+        .post(`/users/u1/jobs/1`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("unauth for regular user applying for different user", async function () {
+    const resp = await request(app)
+        .post(`/users/u3/jobs/2`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("not found if user not found", async function () {
+    const resp = await request(app)
+        .post(`/users/u99/jobs/99`)
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+});
+
+
 
 /************************************** PATCH /users/:username */
 

@@ -96,6 +96,27 @@ class User {
     return user;
   }
 
+  /**
+   * Apply to a given job.
+   * This should really be an instance method.
+   * @param {*} username 
+   * @param {*} jobId 
+   * returns job_id
+   */
+  static async apply(username, jobId) {
+    const result = await db.query(
+      `INSERT INTO applications(username, job_id)
+       VALUES($1, $2)
+       RETURNING job_id`,
+       [username, jobId]);
+    
+    const job = result.rows[0];
+    if(!job) throw new NotFoundError(
+      `No user and/or job with ID: ${username}, ${jobId}`);
+
+    return job["job_id"];
+  }
+
   /** Find all users.
    *
    * Returns [{ username, first_name, last_name, email, is_admin }, ...]
@@ -125,13 +146,17 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-          `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
-           FROM users
-           WHERE username = $1`,
+          `SELECT u.username,
+                  u.first_name AS "firstName",
+                  u.last_name AS "lastName",
+                  u.email,
+                  u.is_admin AS "isAdmin",
+                  ARRAY_AGG(a.job_id) AS "jobs"
+           FROM users AS u
+           LEFT JOIN applications AS a
+           ON u.username = a.username
+           WHERE u.username = $1
+           GROUP BY u.username`,
         [username],
     );
 

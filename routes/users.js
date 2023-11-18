@@ -9,6 +9,7 @@ const { ensureLoggedIn,
         ensureCorrectUserOrAdmin } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
+const Job = require("../models/job");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
@@ -69,11 +70,31 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  * Authorization required: admin or that user
  **/
 
-router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:username", ensureCorrectUserOrAdmin,
+ async function (req, res, next) {
   try {
     const user = await User.get(req.params.username);
     return res.json({ user });
   } catch (err) {
+    return next(err);
+  }
+});
+
+/** POST /[username]/jobs/[id]
+ *  Returns { applied: jobId }
+ * 
+ * Authorization required: admin or that user
+ **/
+router.post("/:username/jobs/:id", ensureCorrectUserOrAdmin,
+async function (req, res, next) {
+  try {
+    //check that job exists
+    const job = await Job.get(req.params.id);
+
+    const jobId = await User.apply(req.params.username, req.params.id);
+
+    return res.json({ applied: jobId });
+  } catch(err) {
     return next(err);
   }
 });

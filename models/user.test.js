@@ -140,6 +140,7 @@ describe("get", function () {
       lastName: "U1L",
       email: "u1@email.com",
       isAdmin: false,
+      jobs: [null]
     });
   });
 
@@ -151,6 +152,23 @@ describe("get", function () {
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   });
+});
+
+/************************************** apply */
+describe("apply", function () {
+  test("works", async function () {
+    let res = await User.apply("u1", 1);
+    expect(res).toEqual(1);
+  });
+
+  // test("not found if no such user", async function () {
+  //   try {
+  //     await User.apply("u9", 1);
+  //     fail();
+  //   } catch (err) {
+  //     expect(err instanceof NotFoundError).toBeTruthy();
+  //   }
+  // });
 });
 
 /************************************** update */

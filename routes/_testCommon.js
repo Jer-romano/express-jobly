@@ -85,7 +85,7 @@ async function commonBeforeAll() {
     title: "Professor",
     salary: 300,
     equity: 0,
-    company_handle: "c3"
+    company_handle: "c2"
   });
 }
 

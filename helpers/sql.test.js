@@ -21,11 +21,15 @@ describe("sqlForPartialUpdate", function() {
     })
 
     test("throws error if no data supplied", function() {
-        const data =  {};
-        const colNames = {};
-
-        //const res = sqlForPartialUpdate(data, colNames);
-        expect(sqlForPartialUpdate(data, colNames)).toThrow(BadRequestError);
-    })
+        try {
+            const data =  {};
+            const colNames = {};
+            sqlForPartialUpdate(data, colNames);
+            fail();
+        } catch(err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+        //expect().toThrow(BadRequestError);
+    });
 
 });

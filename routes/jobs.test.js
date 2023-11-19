@@ -104,7 +104,7 @@ describe("GET /jobs", function () {
                 title: "Professor",
                 salary: 300,
                 equity: "0",
-                companyHandle: "c3"
+                companyHandle: "c2"
             }
           ],
     });
@@ -145,7 +145,7 @@ describe("GET /jobs", function () {
                     title: "Professor",
                     salary: 300,
                     equity: "0",
-                    companyHandle: "c3"
+                    companyHandle: "c2"
                 }
             ]
     });
